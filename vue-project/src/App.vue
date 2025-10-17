@@ -11,11 +11,10 @@ import axios from 'axios';
 import ClienteList from './components/ClienteList.vue';
 
 interface Cliente {
-  id_cliente: number;
+  id: number;
   nombre: string;
-  telefono: string;
-  correo: string;
-  direccion: string;
+  apellido: string;
+
 }
 
 export default defineComponent({

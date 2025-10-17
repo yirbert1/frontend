@@ -4,9 +4,7 @@
 
     <form @submit.prevent="registrarCliente" class="formulario-cliente">
       <input v-model="clienteNuevo.nombre" placeholder="Nombre" required />
-      <input v-model="clienteNuevo.telefono" placeholder="Teléfono" required />
-      <input v-model="clienteNuevo.correo" placeholder="Correo" type="email" required />
-      <input v-model="clienteNuevo.direccion" placeholder="Dirección" required />
+      <input v-model="clienteNuevo.apellido" placeholder="Apellido" required />
       <button type="submit">Registrar</button>
     </form>
 
@@ -18,18 +16,14 @@
         <tr>
           <th>ID</th>
           <th>Nombre</th>
-          <th>Correo</th>
-          <th>Teléfono</th>
-          <th>Dirección</th>
+          <th>Apellido</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="cliente in clientes" :key="cliente.id_cliente">
-          <td>{{ cliente.id_cliente }}</td>
+        <tr v-for="cliente in clientes" :key="cliente.id">
+          <td>{{ cliente.id }}</td>
           <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.correo }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>{{ cliente.direccion }}</td>
+          <td>{{ cliente.apellido }}</td>
         </tr>
       </tbody>
     </table>
@@ -37,15 +31,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType  } from 'vue';
+import { defineComponent, type PropType } from 'vue';
 import axios from 'axios';
 
 interface Cliente {
-  id_cliente: number;
+  id: number;
   nombre: string;
-  telefono: string;
-  correo: string;
-  direccion: string;
+  apellido: string;
 }
 
 export default defineComponent({
@@ -60,10 +52,8 @@ export default defineComponent({
     return {
       clienteNuevo: {
         nombre: '',
-        telefono: '',
-        correo: '',
-        direccion: '',
-      } as Omit<Cliente, 'id_cliente'>,
+        apellido: '',
+      } as Omit<Cliente, 'id'>,
     };
   },
   methods: {
@@ -75,9 +65,7 @@ export default defineComponent({
         // Resetear el formulario
         this.clienteNuevo = {
           nombre: '',
-          telefono: '',
-          correo: '',
-          direccion: '',
+          apellido: '',
         };
 
         alert('✅ Cliente registrado con éxito');
@@ -90,7 +78,7 @@ export default defineComponent({
 });
 </script>
 
-<style >
+<style>
 .cliente-container {
   max-width: 800px;
   margin: 40px auto;
@@ -165,13 +153,13 @@ h2 {
   color: #000000;
 }
 
-
 .tabla-clientes tbody tr:hover {
   background-color: #0022ff;
 }
 body {
   background-color: #0a1ed0;
 }
+
 /* Responsive (móviles) */
 @media (max-width: 600px) {
   .cliente-container {
