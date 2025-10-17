@@ -1,13 +1,25 @@
 <template>
-  <div>
+  <div class="cliente-container">
+    <h2>📝 Registrar Cliente</h2>
+
+    <form @submit.prevent="registrarCliente" class="formulario-cliente">
+      <input v-model="clienteNuevo.nombre" placeholder="Nombre" required />
+      <input v-model="clienteNuevo.telefono" placeholder="Teléfono" required />
+      <input v-model="clienteNuevo.correo" placeholder="Correo" type="email" required />
+      <input v-model="clienteNuevo.direccion" placeholder="Dirección" required />
+      <button type="submit">Registrar</button>
+    </form>
+
+    <hr />
+
     <h2>📋 Lista de Clientes</h2>
-    <table border="1" cellpadding="8">
+    <table class="tabla-clientes">
       <thead>
         <tr>
           <th>ID</th>
           <th>Nombre</th>
-          <th>Teléfono</th>
           <th>Correo</th>
+          <th>Teléfono</th>
           <th>Dirección</th>
         </tr>
       </thead>
@@ -15,8 +27,8 @@
         <tr v-for="cliente in clientes" :key="cliente.id_cliente">
           <td>{{ cliente.id_cliente }}</td>
           <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.telefono }}</td>
           <td>{{ cliente.correo }}</td>
+          <td>{{ cliente.telefono }}</td>
           <td>{{ cliente.direccion }}</td>
         </tr>
       </tbody>
@@ -25,9 +37,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"; // 👈 nota el "type" aquí
+import { defineComponent, type PropType  } from 'vue';
+import axios from 'axios';
 
-// 💡 Definición del tipo Cliente
 interface Cliente {
   id_cliente: number;
   nombre: string;
@@ -37,59 +49,144 @@ interface Cliente {
 }
 
 export default defineComponent({
-  name: "ClienteList",
+  name: 'ClienteList',
   props: {
     clientes: {
-      type: Array as PropType<Cliente[]>, // 👈 usa el tipo correctamente
+      type: Array as PropType<Cliente[]>,
       required: true,
+    },
+  },
+  data() {
+    return {
+      clienteNuevo: {
+        nombre: '',
+        telefono: '',
+        correo: '',
+        direccion: '',
+      } as Omit<Cliente, 'id_cliente'>,
+    };
+  },
+  methods: {
+    async registrarCliente() {
+      try {
+        const respuesta = await axios.post<Cliente>('http://localhost:3000/api/cliente', this.clienteNuevo);
+        this.$emit('cliente-registrado', respuesta.data);
+
+        // Resetear el formulario
+        this.clienteNuevo = {
+          nombre: '',
+          telefono: '',
+          correo: '',
+          direccion: '',
+        };
+
+        alert('✅ Cliente registrado con éxito');
+      } catch (error) {
+        console.error('❌ Error al registrar cliente:', error);
+        alert('❌ Ocurrió un error al registrar el cliente. Intenta nuevamente.');
+      }
     },
   },
 });
 </script>
 
-<style scoped>
-table {
-  width: 90%;
-  margin: 30px auto;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+<style >
+.cliente-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #ffffff;
-}
-
-th {
-  background-color: #4a90e2;
-  color: #ffffff;
-  text-align: left;
-  padding: 12px 16px;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-}
-
-td {
-  padding: 12px 16px;
-  border-top: 1px solid #f0f0f0;
-  font-size: 14px;
-  color: #333333;
-}
-
-tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-tr:hover {
-  background-color: #eef6ff;
-  transition: background-color 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgb(0, 0, 0);
+  border-radius: 10px;
 }
 
 h2 {
-  text-align: center;
-  font-size: 24px;
-  margin-top: 40px;
-  color: #333;
+  color: #000000;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+}
+
+.formulario-cliente {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.formulario-cliente input {
+  padding: 12px 14px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.formulario-cliente input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.formulario-cliente button {
+  padding: 12px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.formulario-cliente button:hover {
+  background-color: #2980b9;
+  transform: scale(1.02);
+}
+
+.tabla-clientes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.tabla-clientes th,
+.tabla-clientes td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #000000;
+}
+
+.tabla-clientes th {
+  background-color: #ffffff;
+  color: #000000;
+}
+.tabla-clientes td {
+  color: #000000;
+}
+
+
+.tabla-clientes tbody tr:hover {
+  background-color: #0022ff;
+}
+body {
+  background-color: #0a1ed0;
+}
+/* Responsive (móviles) */
+@media (max-width: 600px) {
+  .cliente-container {
+    padding: 15px;
+  }
+
+  .formulario-cliente input,
+  .formulario-cliente button {
+    font-size: 14px;
+  }
+
+  .tabla-clientes th,
+  .tabla-clientes td {
+    padding: 10px;
+    font-size: 14px;
+  }
 }
 </style>
